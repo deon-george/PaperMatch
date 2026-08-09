@@ -14,7 +14,16 @@ PaperMatch uses **retrieval-augmented generation (RAG)** to break a paper into s
 - **AI summary** — optional Gemini-generated evaluation and recommendations
 - **PDF report export** — styled, downloadable similarity report
 - **User accounts & synced history** — optional login backed by MongoDB Atlas
-- **Graceful degradation** — deterministic analysis + local-only history when no API keys or database are configured
+- **Graceful degradation** — deterministic analysis + local-only history when no API 
+keys or database are configured
+
+## Live Video
+
+Youtube Link: https://youtu.be/n7CvF82r8Eo
+
+## Technical Documentation
+
+Google Drive Link: https://docs.google.com/document/d/1YfHu1uFUuxIn4Mdyx6qOslIZ2ypDRZxS/edit?usp=sharing&ouid=104082011666407737330&rtpof=true&sd=true
 
 ## Tech Stack
 

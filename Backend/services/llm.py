@@ -49,7 +49,9 @@ class GeminiClient:
             try:
                 self._client = genai.Client(
                     api_key=Config.GEMINI_API_KEY,
-                    http_options={"timeout": Config.GEMINI_TIMEOUT},
+                    # HttpOptions.timeout is in milliseconds (SDK converts to
+                    # seconds internally); Config keeps GEMINI_TIMEOUT in seconds.
+                    http_options={"timeout": Config.GEMINI_TIMEOUT * 1000},
                 )
             except Exception as exc:  # noqa: BLE001
                 print(f"[llm] could not initialise Gemini client ({exc}); running without LLM")

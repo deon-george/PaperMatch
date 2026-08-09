@@ -6,7 +6,7 @@ import SectionAnalysis from './SectionAnalysis'
 import TopicsCard from './TopicsCard'
 import Recommendations from './Recommendations'
 
-export default function Dashboard({ comparison, loading, error, onCompare }) {
+export default function Dashboard({ comparison, loading, error, onCompare, onNavigate }) {
   const report = comparison?.report
 
   return (

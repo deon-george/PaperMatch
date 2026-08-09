@@ -1,11 +1,3 @@
-const recs = [
-  'Add experimental setup details',
-  'Include hyperparameter configurations',
-  'Add future work section',
-  'Consider adding more visual elements for better engagement',
-  'Great coverage of methodology and results!',
-]
-
 function CheckIcon() {
   return (
     <svg className="rec-check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -15,7 +7,18 @@ function CheckIcon() {
   )
 }
 
-export default function Recommendations() {
+function downloadReport(report) {
+  const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `papermatch-report-${Date.now()}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+export default function Recommendations({ report }) {
+  const recs = report?.recommendations || []
   return (
     <div className="recommendations-card">
       <div className="rec-header">
@@ -23,14 +26,26 @@ export default function Recommendations() {
         Recommendations
       </div>
       <ul className="rec-list">
-        {recs.map((rec, i) => (
-          <li className="rec-item" key={i} id={`rec-${i}`}>
+        {recs.length === 0 ? (
+          <li className="rec-item">
             <CheckIcon />
-            <span>{rec}</span>
+            <span>Complete a comparison to get personalised recommendations.</span>
           </li>
-        ))}
+        ) : (
+          recs.map((rec, i) => (
+            <li className="rec-item" key={i} id={`rec-${i}`}>
+              <CheckIcon />
+              <span>{rec}</span>
+            </li>
+          ))
+        )}
       </ul>
-      <button className="download-btn" id="download-report-btn">
+      <button
+        className="download-btn"
+        id="download-report-btn"
+        onClick={() => report && downloadReport(report)}
+        disabled={!report}
+      >
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>

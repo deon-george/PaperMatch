@@ -59,3 +59,15 @@ tsconfig.tsbuildinfo
 # ===== Misc =====
 .tmp/
 .temp/
+
+# ===== Python / Backend =====
+.venv/
+__pycache__/
+*.pyc
+Backend/uploads/
+Backend/_smoke/
+Backend/_smoke_test.py
+Backend/_server.log
+Backend/.env
+Frontend/_dev.log
+Frontend/dist/

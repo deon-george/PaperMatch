@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 const navItems = [
   {
     id: 'dashboard',
@@ -57,9 +55,7 @@ const navItems = [
   },
 ]
 
-export default function Sidebar() {
-  const [activeNav, setActiveNav] = useState('dashboard')
-
+export default function Sidebar({ active = 'dashboard', onNavigate }) {
   return (
     <aside className="sidebar">
       {/* Logo */}
@@ -84,8 +80,8 @@ export default function Sidebar() {
           <button
             key={item.id}
             id={`nav-${item.id}`}
-            className={`nav-item ${activeNav === item.id ? 'active' : ''}`}
-            onClick={() => setActiveNav(item.id)}
+            className={`nav-item ${active === item.id ? 'active' : ''}`}
+            onClick={() => onNavigate?.(item.id)}
           >
             <span className="nav-icon">{item.icon}</span>
             {item.label}

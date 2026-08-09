@@ -17,7 +17,9 @@ PaperMatch uses **retrieval-augmented generation (RAG)** to break a paper into s
 - **Graceful degradation** — deterministic analysis + local-only history when no API 
 keys or database are configured
 
-# WebApp Live at: 
+## WebApp Live at
+
+
 
 
 ## Live Video

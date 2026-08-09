@@ -4,10 +4,11 @@ import AIEvaluation from './AIEvaluation'
 import SectionAnalysis from './SectionAnalysis'
 import TopicsCard from './TopicsCard'
 import Recommendations from './Recommendations'
+import { apiUrl } from '../lib/api'
 import { formatDate } from '../lib/history'
 
 async function downloadReportPDF(report) {
-  const res = await fetch('/api/report/pdf', {
+  const res = await fetch(apiUrl('/api/report/pdf'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(report),

@@ -99,6 +99,40 @@ npm run dev
 
 The frontend runs on `http://localhost:5173` and proxies `/api/*` requests to the backend.
 
+## Deployment
+
+### Frontend on Vercel
+
+Deploy the `Frontend/` directory as a Vite project on Vercel. Set this environment variable in the Vercel project settings:
+
+```dotenv
+VITE_API_BASE_URL=https://your-render-backend.onrender.com
+```
+
+That makes the frontend call the Render backend directly in production while keeping local development on the Vite proxy.
+
+### Backend on Render
+
+Deploy the `Backend/` service on Render using the included `render.yaml`, or create a Python web service with:
+
+```bash
+cd Backend
+pip install -r requirements.txt
+python app.py
+```
+
+Render will inject `PORT`, and the Flask app now binds to it automatically.
+
+Recommended backend environment variables on Render:
+
+```dotenv
+GEMINI_API_KEY=...
+MONGODB_URI=...
+JWT_SECRET=...
+```
+
+If you use custom frontend and backend domains, keep `flask-cors` enabled as-is; the API already allows cross-origin requests for `/api/*`.
+
 ## Configuration
 
 Create a `.env` file inside `Backend/`:

@@ -6,6 +6,7 @@ import Reports from './components/Reports'
 import ReportPage from './components/ReportPage'
 import TopicAnalysis from './components/TopicAnalysis'
 import AuthPage from './components/AuthPage'
+import { apiUrl } from './lib/api'
 import { saveHistory } from './lib/history'
 import { authFetch, clearAuth, getToken, getUser, setAuth } from './lib/auth'
 
@@ -13,7 +14,7 @@ async function analyzeFiles(paper, presentation) {
   const form = new FormData()
   form.append('paper', paper)
   form.append('presentation', presentation)
-  const res = await fetch('/api/analyze', { method: 'POST', body: form })
+  const res = await fetch(apiUrl('/api/analyze'), { method: 'POST', body: form })
   const data = await res.json()
   if (!res.ok || !data.ok) throw new Error(data.error || 'Analysis failed')
   return data

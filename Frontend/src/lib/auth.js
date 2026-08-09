@@ -1,3 +1,5 @@
+import { apiUrl } from './api'
+
 const TOKEN_KEY = 'papermatch_token'
 const USER_KEY = 'papermatch_user'
 
@@ -27,6 +29,6 @@ export async function authFetch(path, options = {}) {
   const token = getToken()
   const headers = { ...(options.headers || {}) }
   if (token) headers.Authorization = `Bearer ${token}`
-  const res = await fetch(path, { ...options, headers })
+  const res = await fetch(apiUrl(path), { ...options, headers })
   return res
 }

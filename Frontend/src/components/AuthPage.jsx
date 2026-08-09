@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { apiUrl } from '../lib/api'
 
 function initials(name) {
   return (name || '?')
@@ -73,7 +74,7 @@ export default function AuthPage({ user, onLogin, onLogout }) {
             password: form.password,
           }
     try {
-      const res = await fetch(`/api/auth/${mode}`, {
+            const res = await fetch(apiUrl(`/api/auth/${mode}`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

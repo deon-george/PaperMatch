@@ -53,9 +53,28 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    id: 'account',
+    label: 'Account',
+    icon: (
+      <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="12" cy="7" r="4" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
 ]
 
-export default function Sidebar({ active = 'dashboard', onNavigate }) {
+function initials(name) {
+  return (name || '?')
+    .split(/[\s.@_]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join('') || '?'
+}
+
+export default function Sidebar({ active = 'dashboard', onNavigate, user = null, onSignOut }) {
   return (
     <aside className="sidebar">
       {/* Logo */}
@@ -103,16 +122,41 @@ export default function Sidebar({ active = 'dashboard', onNavigate }) {
 
       {/* User */}
       <div className="sidebar-user" id="user-menu">
-        <div className="user-avatar">AS</div>
+        <div className="user-avatar">{user ? initials(user.username) : '?'}</div>
         <div className="user-info">
-          <div className="user-name">Arjun S.</div>
-          <div className="user-email">arjun@example.com</div>
+          {user ? (
+            <>
+              <div className="user-name">{user.username}</div>
+              <div className="user-email">{user.email}</div>
+            </>
+          ) : (
+            <>
+              <div className="user-name">Guest</div>
+              <div className="user-email">Sign in to sync history</div>
+            </>
+          )}
         </div>
-        <span className="user-chevron">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-        </span>
+        <div className="user-actions">
+          {user ? (
+            <button className="user-action" title="Sign out" onClick={onSignOut}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+            </button>
+          ) : (
+            <button
+              className="user-action"
+              title="Account"
+              onClick={() => onNavigate?.('account')}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
     </aside>
   )

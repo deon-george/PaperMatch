@@ -6,6 +6,9 @@ numpy>=1.26.0
 python-dotenv>=1.0.0
 google-genai>=1.0.0
 reportlab>=4.0.0
+pymongo>=4.6.0
+dnspython>=2.4.0
+PyJWT>=2.8.0
 # Embedding-backed RAG (optional — the server falls back to a lightweight
 # lexical vectorizer if this package cannot be installed in this environment):
 # sentence-transformers>=2.7.0

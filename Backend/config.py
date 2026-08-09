@@ -21,6 +21,16 @@ class Config:
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
     GEMINI_TIMEOUT = int(os.getenv("GEMINI_TIMEOUT", "90"))
 
+    # MongoDB Atlas persistence (history + user accounts). Empty URI disables
+    # the database layer; the app keeps working anonymously in that case.
+    MONGODB_URI = os.getenv("MONGODB_URI", "")
+    MONGODB_DB_NAME = os.getenv("MONGODB_DB_NAME", "papermatch")
+    MONGODB_TIMEOUT_MS = int(os.getenv("MONGODB_TIMEOUT_MS", "10000"))
+
+    # Auth tokens (signed with PyJWT). Change JWT_SECRET in production.
+    JWT_SECRET = os.getenv("JWT_SECRET", "dev-secret-change-me")
+    JWT_EXPIRATION_HOURS = int(os.getenv("JWT_EXPIRATION_HOURS", "168"))  # 7 days
+
     # Number of top retrieval results used while reasoning over each slide.
     RETRIEVAL_TOP_K = int(os.getenv("RETRIEVAL_TOP_K", "6"))
     # Paper chunks that do not match any slide as strongly as this fraction of

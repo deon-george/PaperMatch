@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import Dashboard from './components/Dashboard'
 import History from './components/History'
 import Reports from './components/Reports'
+import ReportPage from './components/ReportPage'
 import TopicAnalysis from './components/TopicAnalysis'
 import AuthPage from './components/AuthPage'
 import { saveHistory } from './lib/history'
@@ -110,6 +111,7 @@ export default function App() {
         )}
         {page === 'history' && <History user={user} onOpen={openHistoryEntry} />}
         {page === 'reports' && <Reports user={user} onOpen={openHistoryEntry} />}
+        {page === 'report' && <ReportPage comparison={comparison} onNavigate={setPage} />}
         {page === 'topic-analysis' && (
           <TopicAnalysis comparison={comparison} onNavigate={setPage} />
         )}

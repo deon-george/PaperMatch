@@ -25,14 +25,29 @@ export default function AuthPage({ user, onLogin, onLogout }) {
           </div>
         </header>
         <div className="dashboard-body">
-          <div className="auth-card">
+          <div className="auth-card account-card">
             <div className="auth-profile">
               <div className="auth-avatar">{initials(user.username)}</div>
               <div className="auth-profile-info">
                 <h3>{user.username}</h3>
                 <p>{user.email}</p>
               </div>
+              <span className="auth-plan-badge">✦ Free Plan</span>
             </div>
+
+            <div className="auth-detail-row">
+              <div className="auth-detail-item">
+                <span className="auth-detail-label">Status</span>
+                <span className="auth-detail-value">
+                  <span className="status-dot online" /> Signed in
+                </span>
+              </div>
+              <div className="auth-detail-item">
+                <span className="auth-detail-label">Sync</span>
+                <span className="auth-detail-value">Cloud history enabled</span>
+              </div>
+            </div>
+
             <p className="auth-note">
               Your comparisons are saved to your PaperMatch account and available on any device.
             </p>
@@ -87,7 +102,7 @@ export default function AuthPage({ user, onLogin, onLogout }) {
         </div>
       </header>
       <div className="dashboard-body">
-        <div className="auth-card">
+        <div className="auth-card form-card">
           <div className="auth-tabs">
             <button
               className={`auth-tab ${mode === 'login' ? 'active' : ''}`}

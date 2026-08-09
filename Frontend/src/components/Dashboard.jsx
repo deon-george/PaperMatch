@@ -46,7 +46,7 @@ export default function Dashboard({ comparison, loading, error, onCompare }) {
           <div className="analysis-grid">
             <ScoreCard report={report} />
             <QuickSummary report={report} />
-            <AIEvaluation report={report} />
+            <AIEvaluation report={report} onNavigate={onNavigate} />
           </div>
 
           <div className="bottom-grid">

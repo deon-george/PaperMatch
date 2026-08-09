@@ -7,6 +7,7 @@ PaperMatch uses **retrieval-augmented generation (RAG)** to break a paper into s
 ## Features
 
 - **Overall similarity score** (0–100%) with a human-readable label and explanation
+- **9-dimension similarity scoring** — semantic content, section & topic coverage, methodology, results, claim/fact consistency, missing/extra content, and structural flow
 - **Section-wise analysis** — every paper section matched against the slides
 - **Missing topics** — paper content that the presentation doesn't cover
 - **Extra / unrelated content** — slides not grounded in the paper
@@ -42,7 +43,7 @@ papermatch/
 │       ├── chunker.py          # Paragraph-aware text chunking
 │       ├── embedder.py         # Embeddings (sentence-transformers / lexical)
 │       ├── rag.py              # Indexing + cosine-similarity retrieval
-│       ├── analyzer.py         # Scoring, missing/extra topic detection
+│       ├── analyzer.py         # 9-dimension scoring, missing/extra detection
 │       ├── llm.py              # Gemini client with graceful fallback
 │       ├── report.py           # Maps analysis -> frontend JSON contract
 │       ├── pdf_report.py       # ReportLab PDF renderer
@@ -121,6 +122,53 @@ JWT_SECRET=replace-with-a-long-random-string
 
 > **Note on embeddings:** install `sentence-transformers` in the venv for semantic (transformer-based) matching. If it's not available, the server automatically falls back to a lightweight TF-IDF lexical vectorizer.
 
+## AI Model Architecture & Similarity Scoring
+
+The comparison engine evaluates a presentation against the paper along **nine independent dimensions**. Every dimension is a calibrated 0–100 score (higher = better) computed deterministically in `services/analyzer.py`, so results are reproducible even without an LLM.
+
+| # | Dimension | What is compared | How it is computed |
+| - | --------- | ---------------- | ------------------ |
+| 1 | **Semantic Content Similarity** | Does the PPT convey the same meaning/concepts as the paper? | Cosine similarity between slide embeddings and paper-chunk embeddings (`all-MiniLM-L6-v2`, TF-IDF fallback), calibrated via percentile normalization, averaged over paper sections. |
+| 2 | **Section Coverage** | Are the paper's key sections represented? | Share of detected sections whose best slide match clears the *Missing* status threshold. |
+| 3 | **Topic/Concept Coverage** | Do the paper's important topics appear? | Length-weighted share of paper chunks matched by at least one slide. |
+| 4 | **Methodology Similarity** | Is the actual research methodology represented? | Section score for *Methodology / Experiments*; falls back to semantic score if absent. |
+| 5 | **Results & Findings** | Do results and conclusions match? | Section score for *Results / Discussion / Conclusion*. |
+| 6 | **Claim/Fact Consistency** | Do the PPT's claims agree with the paper? | Extracts numeric facts from the paper (percentages, comma-separated counts, numbers next to metric keywords like *accuracy/AUC/F1*) and scores the share that also appear on the slides — e.g. paper says `94.2%`, deck says `98%` ⇒ mismatch detected. |
+| 7 | **Missing Content** | Is important paper content absent from the PPT? | Share of paper chunks whose best match stays below `MISS_MATCH_THRESHOLD`. |
+| 8 | **Extra/Unsupported Content** | Is there PPT content not supported by the paper? | Share of slides whose best paper match stays below `EXTRA_SLIDE_THRESHOLD` (inverted). |
+| 9 | **Structural Similarity** | Does the deck follow the paper's logical flow? | Each slide is assigned its best-matching section; scores the share of slide-to-slide transitions that keep increasing paper section order (Introduction → Methodology → Results → Conclusion). |
+
+### Scoring pipeline
+
+```
+paper PDF ──▶ extract ──▶ sectionize ──▶ chunk ──▶ embed (sentence-transformers / TF-IDF)
+                                                          │
+                                                          ▼
+                              slides × chunks cosine similarity matrix
+                                                          │
+                       combine semantic (0.7) + lexical (0.3)  ◀── when transformer embeddings are on
+                                                          │
+                    calibrate percentile (3rd ↔ 92nd)     │
+                                                          ▼
+                    9 dimension scores (0–100 each)  ──▶  overall score (weighted)
+```
+
+The **overall score** is a weighted blend of the nine dimensions (weights in `DIM_WEIGHTS`):
+
+| Dimension | Weight |
+| --------- | ------ |
+| Semantic Content Similarity | 0.15 |
+| Section Coverage | 0.10 |
+| Topic/Concept Coverage | 0.15 |
+| Methodology Similarity | 0.10 |
+| Results & Findings | 0.10 |
+| Claim/Fact Consistency | 0.10 |
+| Missing Content | 0.05 |
+| Extra/Unsupported Content | 0.10 |
+| Structural Similarity | 0.15 |
+
+These scores are also injected into the (optional) Gemini prompt as *DIMENSION SCORES*, so the LLM's evaluation and recommendations stay grounded in the same numbers. The `ai_quality` field still reports the LLM's independent 0–100 verdict, and the final label/description is derived from the weighted overall score.
+
 ## API Reference
 
 All endpoints are prefixed with `/api`.
@@ -156,8 +204,8 @@ This generates a sample PDF and PPTX in `_smoke/` and runs the full analysis pip
 2. **Structure** — the paper is split into sections; the deck into individual slides.
 3. **Index** — paper sections are chunked and embedded into a vector index.
 4. **Match** — each slide is scored against the paper using cosine similarity retrieval.
-5. **Analyze** — scores are normalized into an overall similarity score, with section coverage, missing topics, and extra content identified.
-6. **Explain** — (optional) Gemini writes a summary and recommendations; otherwise deterministic narratives are used.
+5. **Analyze** — scores are normalized into **nine similarity dimensions** (semantic content, section/topic coverage, methodology, results, claim/fact consistency, missing/extra content, structure) and combined into an overall similarity score.
+6. **Explain** — (optional) Gemini writes a summary and recommendations grounded in the dimension scores; otherwise deterministic narratives are used.
 
 ## Troubleshooting
 

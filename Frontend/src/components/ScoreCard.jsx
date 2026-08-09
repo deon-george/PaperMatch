@@ -2,7 +2,7 @@ const RADIUS = 72
 const STROKE = 14
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
-const COLORS = ['#4F46E5', '#4F46E5', '#F59E0B', '#EF4444', '#8B5CF6']
+const COLORS = ['#4F46E5', '#06B6D4', '#F59E0B', '#10B981', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#6366F1']
 
 export default function ScoreCard({ report }) {
   const breakdown = report?.breakdown || []

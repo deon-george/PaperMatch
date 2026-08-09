@@ -14,7 +14,8 @@ def _label(score: int) -> str:
     return "Needs Improvement"
 
 
-def _description(score: int, semantic: int, coverage: int, missing_pct: int, extra_pct: int, ai_quality: int) -> str:
+def _description(score: int, semantic: int, coverage: int, missing_pct: int, extra_pct: int,
+                 ai_quality: int, dimensions: dict | None = None) -> str:
     parts = []
     if score >= 75:
         parts.append("Great job! Your presentation faithfully represents the research paper.")
@@ -30,9 +31,28 @@ def _description(score: int, semantic: int, coverage: int, missing_pct: int, ext
         parts.append("Several paper topics are not reflected in the deck.")
     if extra_pct > 25:
         parts.append("Some slides contain material that is not grounded in the paper.")
+    if dimensions:
+        if dimensions.get("fact_consistency", 100) < 60:
+            parts.append("Some numbers or metrics on the slides do not match the paper.")
+        if dimensions.get("structure", 100) < 60:
+            parts.append("The slide order does not follow the paper's logical flow.")
     if not parts:
         parts.append("The presentation and paper are in reasonable alignment.")
     return " ".join(parts)
+
+
+# Order + labels shown in the score breakdown, keyed by analysis dimension.
+BREAKDOWN_ITEMS = [
+    ("semantic_content", "Semantic Content Similarity"),
+    ("section_coverage", "Section Coverage"),
+    ("topic_coverage", "Topic/Concept Coverage"),
+    ("methodology", "Methodology Similarity"),
+    ("results", "Results & Findings"),
+    ("fact_consistency", "Claim/Fact Consistency"),
+    ("missing_content", "No Missing Content"),
+    ("extra_content", "No Extra/Unsupported Content"),
+    ("structure", "Structural Similarity"),
+]
 
 
 def build_report(analysis: dict, paper_meta: dict, ppt_meta: dict) -> dict:
@@ -42,13 +62,11 @@ def build_report(analysis: dict, paper_meta: dict, ppt_meta: dict) -> dict:
     missing_pct = analysis["missing_pct"]
     extra_pct = analysis["extra_pct"]
     ai_quality = analysis["ai_quality"]
+    dimensions = analysis.get("dimensions") or {}
 
     breakdown = [
-        {"label": "Semantic Similarity", "pct": semantic},
-        {"label": "Topic Coverage", "pct": coverage},
-        {"label": "Missing Topics", "pct": missing_pct},
-        {"label": "Extra/Irrelevant Topics", "pct": extra_pct},
-        {"label": "AI Quality Evaluation", "pct": ai_quality},
+        {"label": label, "pct": dimensions.get(key, 0)}
+        for key, label in BREAKDOWN_ITEMS
     ]
 
     return {
@@ -61,7 +79,7 @@ def build_report(analysis: dict, paper_meta: dict, ppt_meta: dict) -> dict:
         },
         "overall_score": score,
         "score_label": _label(score),
-        "score_description": _description(score, semantic, coverage, missing_pct, extra_pct, ai_quality),
+        "score_description": _description(score, semantic, coverage, missing_pct, extra_pct, ai_quality, dimensions),
         "breakdown": breakdown,
         "quick_summary": analysis["quick"],
         "sections": analysis["sections"],

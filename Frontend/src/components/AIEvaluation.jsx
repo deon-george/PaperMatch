@@ -1,4 +1,4 @@
-export default function AIEvaluation({ report }) {
+export default function AIEvaluation({ report, onNavigate }) {
   const quote = report?.ai_quote || ''
   const quality = report?.ai_quality ?? null
   return (
@@ -11,7 +11,12 @@ export default function AIEvaluation({ report }) {
       <p className="ai-quote">
         {quote ? `"${quote}"` : 'AI evaluation will appear here after a comparison.'}
       </p>
-      <button className="view-feedback-btn" id="view-feedback-btn">
+      <button
+        className="view-feedback-btn"
+        id="view-feedback-btn"
+        onClick={() => onNavigate?.('report')}
+        disabled={!report}
+      >
         View Full Feedback
       </button>
     </div>

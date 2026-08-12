@@ -264,7 +264,7 @@ This generates a sample PDF and PPTX in `_smoke/` and runs the full analysis pip
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Released under the [Apache 2.0 License](LICENSE).
 
 
 Made with ❤️ by Deon George in association with StackWars 2026 organised by IEDC AWH

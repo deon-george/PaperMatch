@@ -178,12 +178,12 @@ function ApiKeysModal({ onClose }) {
   )
 }
 
-export default function Sidebar({ active = 'dashboard', onNavigate, user = null, onSignOut }) {
+export default function Sidebar({ active = 'dashboard', onNavigate, user = null, onSignOut, isOpen = false, onClose }) {
   const [showApiModal, setShowApiModal] = useState(false)
 
   return (
     <>
-      <aside className="sidebar">
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
         {/* Logo */}
         <div className="sidebar-logo">
           <div className="logo-icon">
@@ -198,6 +198,14 @@ export default function Sidebar({ active = 'dashboard', onNavigate, user = null,
             </div>
             <div className="logo-tagline">Research. Present. Perfect.</div>
           </div>
+          {onClose && (
+            <button className="sidebar-close-btn" onClick={onClose} aria-label="Close sidebar">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Navigation */}
@@ -207,7 +215,10 @@ export default function Sidebar({ active = 'dashboard', onNavigate, user = null,
               key={item.id}
               id={`nav-${item.id}`}
               className={`nav-item ${active === item.id ? 'active' : ''}`}
-              onClick={() => onNavigate?.(item.id)}
+              onClick={() => {
+                onNavigate?.(item.id);
+                onClose?.();
+              }}
             >
               <span className="nav-icon">{item.icon}</span>
               {item.label}
@@ -247,7 +258,10 @@ export default function Sidebar({ active = 'dashboard', onNavigate, user = null,
           </div>
           <div className="user-actions">
             {user ? (
-              <button className="user-action" title="Sign out" onClick={onSignOut}>
+              <button className="user-action" title="Sign out" onClick={() => {
+                onSignOut?.();
+                onClose?.();
+              }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9"/>
                   <polyline points="16 17 21 12 16 7"/>
@@ -258,7 +272,10 @@ export default function Sidebar({ active = 'dashboard', onNavigate, user = null,
               <button
                 className="user-action"
                 title="Account"
-                onClick={() => onNavigate?.('account')}
+                onClick={() => {
+                  onNavigate?.('account');
+                  onClose?.();
+                }}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="9 18 15 12 9 6"/>
